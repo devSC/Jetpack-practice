@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,9 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.mainactivity.R;
-
-import java.io.Console;
-
+import com.example.mainactivity.databinding.JetpackFragmentBinding;
 
 public class JetpackFragment extends Fragment {
 
@@ -33,13 +32,21 @@ public class JetpackFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.jetpack_fragment, container, false);
+        JetpackFragmentBinding binding = DataBindingUtil.inflate(inflater, R.layout.jetpack_fragment, container, false);
+
+        User user = new User("Jetpack", "google");
+        //set view model to layout file
+        binding.setViewModel(mViewModel);
+
+        View view = binding.getRoot();
         messageView = view.findViewById(R.id.jack_message);
         changeButton = view.findViewById(R.id.jack_button);
         changeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mViewModel.updateDataValue("Hello Jetpack!");
+                String s = "Jetpack+added";
+                String string = messageView.getText().toString() + "\n" + s;
+                mViewModel.updateDataValue(string);
             }
         });
 
@@ -47,11 +54,12 @@ public class JetpackFragment extends Fragment {
         stockLiveData.observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
-                mViewModel.updateDataValue(s);
+//                mViewModel.updateDataValue(s);
             }
         });
 
         //transformations
+        /*
         LiveData<String> transformationsData= Transformations.map(mViewModel.getUserLiveData(), user -> user.lastName + " " + user.firstName);
 
         transformationsData.observe(this, string -> {
@@ -62,6 +70,12 @@ public class JetpackFragment extends Fragment {
 
         user.observe(this, userInfo -> {
 
+        });
+        */
+
+        //life cycle
+        JetpackLifecycleListener listener = new JetpackLifecycleListener(this.getContext(), getLifecycle(), string -> {
+           System.out.println("call back: " + string);
         });
         return view;
     }
@@ -81,7 +95,7 @@ public class JetpackFragment extends Fragment {
                 messageView.setText(string);
             }
         };
-        mViewModel.getData().observe(this, nameObserver);
+        mViewModel.getStringData().observe(this, nameObserver);
     }
 
     @Override

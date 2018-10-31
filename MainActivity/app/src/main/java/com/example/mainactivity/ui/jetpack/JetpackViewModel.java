@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModel;
 public class JetpackViewModel extends ViewModel {
     private MutableLiveData<String> data;
     private MutableLiveData<User> userMutableLiveData;
+    public String stringValue = "Hello Jetpack";
 
     public LiveData<User> getUserLiveData() {
         if (userMutableLiveData == null) {
@@ -22,9 +23,9 @@ public class JetpackViewModel extends ViewModel {
         return liveData;
     }
 
-    public LiveData<String> getData() {
+    public LiveData<String> getStringData() {
         if (data == null) {
-            data = new MutableLiveData<String>();
+            data = new MutableLiveData();
         }
         return data;
     }
