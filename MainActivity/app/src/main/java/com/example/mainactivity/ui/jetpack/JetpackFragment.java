@@ -12,17 +12,15 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.example.mainactivity.R;
 import com.example.mainactivity.databinding.JetpackFragmentBinding;
 
 public class JetpackFragment extends Fragment {
 
+    private JetpackFragmentBinding binding;
     private JetpackViewModel mViewModel;
-    private Button changeButton;
-    private TextView messageView;
+    private AdvancedUser advancedUser;
 
     public static JetpackFragment newInstance() {
         return new JetpackFragment();
@@ -32,22 +30,33 @@ public class JetpackFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        JetpackFragmentBinding binding = DataBindingUtil.inflate(inflater, R.layout.jetpack_fragment, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.jetpack_fragment, container, false);
 
         User user = new User("Jetpack", "google");
         //set view model to layout file
-        binding.setViewModel(mViewModel);
+        binding.setUser(user);
 
-        View view = binding.getRoot();
-        messageView = view.findViewById(R.id.jack_message);
-        changeButton = view.findViewById(R.id.jack_button);
-        changeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String s = "Jetpack+added";
-                String string = messageView.getText().toString() + "\n" + s;
-                mViewModel.updateDataValue(string);
-            }
+        LogJetmessageHandler messageHandler = new LogJetmessageHandler();
+        binding.setMessageHandler(messageHandler);
+
+        binding.jackButton.setOnClickListener( view -> {
+            String s = "Jetpack+added";
+            String string = binding.jackMessage.getText().toString() + "\n" + s;
+            mViewModel.updateDataValue(string);
+        });
+
+        //Observable
+        advancedUser = new AdvancedUser();
+        advancedUser.firstName.set("Apple");
+        advancedUser.lastName.set("Steven");
+        advancedUser.age.set(18);
+        binding.setAdvancedUser(advancedUser);
+
+        binding.dataBindingTextView.setOnClickListener(view -> {
+            String lastName = advancedUser.lastName.get();
+            advancedUser.lastName.set(advancedUser.firstName.get());
+            advancedUser.firstName.set(lastName);
+            advancedUser.age.set(advancedUser.age.get() + 1);
         });
 
         StockLiveData stockLiveData = new StockLiveData("888888");
@@ -77,7 +86,7 @@ public class JetpackFragment extends Fragment {
         JetpackLifecycleListener listener = new JetpackLifecycleListener(this.getContext(), getLifecycle(), string -> {
            System.out.println("call back: " + string);
         });
-        return view;
+        return binding.getRoot();
     }
 
     @Override
@@ -85,17 +94,9 @@ public class JetpackFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(JetpackViewModel.class);
         // TODO: Use the ViewModelSystem.console
-
-        final Observer<String> nameObserver = new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                //upate UI
-                System.out.println("name changed: " + s);
-                String string = messageView.getText().toString() + "\n" + s;
-                messageView.setText(string);
-            }
-        };
-        mViewModel.getStringData().observe(this, nameObserver);
+        mViewModel.getStringData().observe(this, string -> {
+            binding.jackMessage.setText(string);
+        });
     }
 
     @Override
