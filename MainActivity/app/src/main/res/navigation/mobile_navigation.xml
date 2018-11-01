@@ -1,5 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mobile_navigation">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/jetpackFragment">
 
+    <fragment
+        android:id="@+id/jetpackFragment"
+        android:name="com.example.mainactivity.ui.jetpack.JetpackFragment"
+        android:label="jetpack_fragment"
+        tools:layout="@layout/jetpack_fragment" >
+        <action
+            android:id="@+id/action_jetpackFragment_to_helloBlankFragment"
+            app:destination="@id/helloBlankFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/helloBlankFragment"
+        android:name="com.example.mainactivity.HelloBlankFragment"
+        android:label="fragment_hello_blank"
+        tools:layout="@layout/fragment_hello_blank" >
+        <action
+            android:id="@+id/action_helloBlankFragment_to_blankSpaceFragment"
+            app:destination="@id/navigation" />
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="www.wilson.com/helloblankfragment" />
+    </fragment>
+    <navigation
+        android:id="@+id/navigation"
+        android:label="BlankSpaceGroup"
+        app:startDestination="@id/blankSpaceFragment">
+        <fragment
+            android:id="@+id/blankSpaceFragment"
+            android:name="com.example.mainactivity.BlankSpaceFragment"
+            android:label="fragment_blank_space"
+            tools:layout="@layout/fragment_blank_space" />
+    </navigation>
 </navigation>

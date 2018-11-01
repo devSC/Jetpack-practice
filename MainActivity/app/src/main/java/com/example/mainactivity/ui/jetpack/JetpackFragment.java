@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import com.example.mainactivity.R;
 import com.example.mainactivity.databinding.JetpackFragmentBinding;
 
+import androidx.navigation.Navigation;
+
 public class JetpackFragment extends Fragment {
 
     private JetpackFragmentBinding binding;
@@ -57,6 +59,11 @@ public class JetpackFragment extends Fragment {
             advancedUser.lastName.set(advancedUser.firstName.get());
             advancedUser.firstName.set(lastName);
             advancedUser.age.set(advancedUser.age.get() + 1);
+        });
+
+        binding.navigateButton.setOnClickListener(view -> {
+            Navigation.findNavController(view).navigate(R.id.action_jetpackFragment_to_helloBlankFragment);
+//            findNavController(view).navigate(R.id.action_jetpackFragment_to_helloBlankFragment);
         });
 
         StockLiveData stockLiveData = new StockLiveData("888888");
