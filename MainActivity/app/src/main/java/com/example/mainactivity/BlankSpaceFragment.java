@@ -1,11 +1,15 @@
 package com.example.mainactivity;
 
 
+import android.databinding.BindingConversion;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 
 /**
@@ -60,5 +64,11 @@ public class BlankSpaceFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_blank_space, container, false);
+    }
+
+    @BindingConversion
+    public static String convertData(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+        return sdf.format(date);
     }
 }

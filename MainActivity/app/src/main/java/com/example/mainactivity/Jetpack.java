@@ -20,6 +20,8 @@ public class Jetpack extends AppCompatActivity {
 //        }
         Toolbar toolbar = findViewById(R.id.main_toolBar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         getNavController().addOnNavigatedListener((controller, destination) -> {
             setTitle(destination.getLabel());
         });
