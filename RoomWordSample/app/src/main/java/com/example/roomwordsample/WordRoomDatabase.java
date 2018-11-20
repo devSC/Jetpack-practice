@@ -1,6 +1,54 @@
 package com.example.roomwordsample;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
+import android.arch.persistence.room.Database;
+import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
-public class WordRoomDatabase extends RoomDatabase {
+@Database(entities = {Word.class}, version = 1)
+public abstract class WordRoomDatabase extends RoomDatabase {
+    public abstract WordDao wordDao();
+
+    private static volatile WordRoomDatabase INSTANCE;
+
+    private static RoomDatabase.Callback callback = new RoomDatabase.Callback() {
+        @Override
+        public void onOpen(@NonNull SupportSQLiteDatabase db) {
+            super.onOpen(db);
+            new PopulateDbAsync(INSTANCE).execute();
+        }
+    };
+
+    public static WordRoomDatabase getDatabase(final Context context) {
+        if (INSTANCE == null) {
+            synchronized (WordRoomDatabase.class) {
+                INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
+                        WordRoomDatabase.class, "word_database")
+                        .addCallback(callback)
+                        .build();
+            }
+        }
+        return INSTANCE;
+    }
+
+    private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
+        private final WordDao dao;
+
+        PopulateDbAsync(WordRoomDatabase db) {
+            dao = db.wordDao();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            dao.deleteAll();
+            Word hello = new Word("Hello");
+            dao.insert(hello);
+            Word word = new Word("World");
+            dao.insert(word);
+            return null;
+        }
+    }
 }
